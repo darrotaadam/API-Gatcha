@@ -1,0 +1,72 @@
+x-internal-secret: &internal-secret
+  INTERNAL_SECRET: "AAAAAAAAAAAAAAAAAAAAAAA"
+
+
+services:
+  #API AUTH
+  mongo-auth:
+    image: mongo
+    container_name: mongo-auth
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=passadmin
+    volumes:
+      - mongo-auth:/persist/auth
+    expose:
+      - 27017
+    ports:
+      - "27017:27017"
+    restart: on-failure
+    networks:
+      - gatcha-lan
+
+  api-auth:
+    build: 
+      context: API_AUTH/
+    container_name: api-auth
+    ports:
+      - "8080:8080"
+    networks:
+      - gatcha-lan
+
+  #API JOUEUR
+  mongo-joueur:
+    image: mongo
+    container_name: mongo-joueur
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=passadmin
+    volumes:
+      - mongo-joueur:/persist/joueur
+    expose:
+      - 27018
+    ports:
+      - "27018:27017"
+    restart: on-failure
+    networks:
+      - gatcha-lan
+
+  api-joueur:
+    environment:
+      <<: *internal-secret
+    build: 
+      context: API_JOUEUR/
+      
+    container_name: api-joueur
+    ports:
+      - "8081:8080"
+    networks:
+      - gatcha-lan
+
+
+
+
+volumes:
+  mongo-auth:
+  mongo-joueur:
+
+
+networks:
+  gatcha-lan:
+    external: true
+
