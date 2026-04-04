@@ -60,10 +60,70 @@ services:
 
 
 
+  # API MONSTRES
+  mongo-monstres:
+    image: mongo
+    container_name: mongo-monstres
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=passadmin
+    volumes:
+      - mongo-monstres:/persist/monstres
+    expose:
+      - 27018
+    ports:
+      - "27019:27017"
+    restart: on-failure
+    networks:
+      - gatcha-lan
+
+  api-monstres:
+    environment:
+      <<: *internal-secret
+    build:
+      context: API_MONSTRES/
+
+    container_name: api-monstres
+    ports:
+      - "8082:8080"
+    networks:
+      - gatcha-lan
+
+
+  # API INVOCATION
+  mongo-invocation:
+    image: mongo
+    container_name: mongo-invocation
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=passadmin
+    volumes:
+      - mongo-invocation:/persist/invocation
+    expose:
+      - 27018
+    ports:
+      - "27020:27017"
+    restart: on-failure
+    networks:
+      - gatcha-lan
+
+  api-invocation:
+    environment:
+      <<: *internal-secret
+    build:
+      context: API_INVOCATIONS/
+
+    container_name: api-invocation
+    ports:
+      - "8083:8080"
+    networks:
+      - gatcha-lan
 
 volumes:
   mongo-auth:
   mongo-joueur:
+  mongo-invocation:
+  mongo-monstres:
 
 
 networks:
