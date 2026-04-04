@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gatcha</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #0b0c14;
+            --surface:   #13141f;
+            --border:    #2a2b3d;
+            --accent:    #c8a96e;
+            --accent-dim:#6e5a35;
+            --text:      #e8e4d8;
+            --muted:     #6b6880;
+            --danger:    #c0473a;
+            --fire:      #e07040;
+            --water:     #4a90c4;
+            --wind:      #5ab87a;
+        }
+
+        body {
+            font-family: 'Crimson Pro', Georgia, serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            grid-template-rows: auto 1fr;
+        }
+
+        header {
+            grid-column: 1 / -1;
+            padding: 24px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+        }
+
+        header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+        }
+
+        header span {
+            font-size: 14px;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+        }
+
+        aside {
+            border-right: 1px solid var(--border);
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        main {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .section-label {
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'Crimson Pro', serif;
+            font-size: 15px;
+            padding: 10px 14px;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { border-color: var(--accent-dim); }
+        input::placeholder { color: var(--muted); }
+
+        .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        .field label { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+
+        .btn {
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            padding: 10px 20px;
+            border: 1px solid var(--accent-dim);
+            background: transparent;
+            color: var(--accent);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover { background: var(--accent-dim); color: var(--text); }
+        .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        .btn.secondary { border-color: var(--border); color: var(--muted); font-size: 11px; }
+        .btn.secondary:hover { background: var(--border); color: var(--text); }
+        .btn.danger { border-color: var(--danger); color: var(--danger); }
+        .btn.danger:hover { background: var(--danger); color: var(--text); }
+
+        .tabs { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 20px; }
+        .tab {
+            flex: 1;
+            padding: 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-align: center;
+            cursor: pointer;
+            color: var(--muted);
+            background: transparent;
+            border: none;
+            transition: background 0.2s, color 0.2s;
+        }
+        .tab.active { background: var(--surface); color: var(--accent); }
+
+        .player-list { display: flex; flex-direction: column; gap: 6px; }
+
+        .player-chip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            background: var(--surface);
+        }
+
+        .player-chip:hover { border-color: var(--accent-dim); }
+        .player-chip.active { border-color: var(--accent); }
+
+        .player-chip-name { font-size: 14px; }
+        .player-chip-level { font-size: 11px; color: var(--muted); }
+
+        .player-chip-remove {
+            font-size: 16px;
+            color: var(--muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+        .player-chip-remove:hover { color: var(--danger); }
+
+        .profile-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 24px;
+        }
+
+        .profile-name {
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .profile-meta {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        .xp-bar-wrap {
+            background: var(--border);
+            border-radius: 2px;
+            height: 3px;
+            margin-top: 8px;
+            margin-bottom: 20px;
+        }
+
+        .xp-bar {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .stat-box {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-box .val { font-size: 22px; font-weight: 300; color: var(--text); }
+        .stat-box .lbl { font-size: 10px; letter-spacing: 0.12em; color: var(--muted); font-family: 'Cinzel', serif; margin-top: 2px; }
+
+        .invoke-section { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+
+        .invoke-btn {
+            font-family: 'Cinzel', serif;
+            font-size: 13px;
+            letter-spacing: 0.15em;
+            padding: 14px 40px;
+            border: 1px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .invoke-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.25s ease;
+            z-index: 0;
+        }
+
+        .invoke-btn:hover::before { transform: scaleX(1); }
+        .invoke-btn:hover { color: var(--bg); }
+        .invoke-btn span { position: relative; z-index: 1; }
+        .invoke-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .invoke-btn:disabled::before { display: none; }
+
+        .monster-result {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 24px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .monster-name {
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .type-badge {
+            display: inline-block;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            padding: 3px 10px;
+            border-radius: 2px;
+            margin-bottom: 20px;
+            font-family: 'Cinzel', serif;
+        }
+
+        .type-feu   { background: rgba(224,112,64,0.15); color: var(--fire);  border: 1px solid var(--fire); }
+        .type-eau   { background: rgba(74,144,196,0.15); color: var(--water); border: 1px solid var(--water); }
+        .type-vent  { background: rgba(90,184,122,0.15); color: var(--wind);  border: 1px solid var(--wind); }
+
+        .monster-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+
+        .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+        .skill-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 14px;
+        }
+
+        .skill-card .skill-name { font-family: 'Cinzel', serif; font-size: 12px; color: var(--accent); margin-bottom: 8px; }
+        .skill-card .skill-row { font-size: 13px; color: var(--muted); margin-bottom: 3px; }
+        .skill-card .skill-row span { color: var(--text); }
+
+        .notice {
+            font-size: 14px;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .error-msg {
+            font-size: 14px;
+            color: var(--danger);
+            padding: 12px;
+            border: 1px solid rgba(192,71,58,0.3);
+            border-radius: 4px;
+            background: rgba(192,71,58,0.05);
+        }
+
+        .pulse {
+            display: inline-block;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        @media (max-width: 768px) {
+            body { grid-template-columns: 1fr; }
+            aside { border-right: none; border-bottom: 1px solid var(--border); }
+            .stats-grid, .monster-stats { grid-template-columns: repeat(2, 1fr); }
+            .skills-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Gatcha</h1>
+    <span>Invocation System</span>
+</header>
+
+<aside>
+    <div id="auth-panel">
+        <p class="section-label">Compte</p>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('login')">Connexion</button>
+            <button class="tab" onclick="switchTab('register')">Inscription</button>
+        </div>
+        <div id="tab-login">
+            <div class="field">
+                <label>Identifiant</label>
+                <input type="text" id="login-id" placeholder="joueur1">
+            </div>
+            <div class="field">
+                <label>Mot de passe</label>
+                <input type="password" id="login-pw" placeholder="••••••">
+            </div>
+            <button class="btn" onclick="login()">Se connecter</button>
+        </div>
+        <div id="tab-register" style="display:none">
+            <div class="field">
+                <label>Identifiant</label>
+                <input type="text" id="reg-id" placeholder="nouveau_joueur">
+            </div>
+            <div class="field">
+                <label>Mot de passe</label>
+                <input type="password" id="reg-pw" placeholder="••••••">
+            </div>
+            <button class="btn" onclick="register()">Créer le compte</button>
+        </div>
+        <div id="auth-error" class="error-msg" style="display:none;margin-top:12px"></div>
+    </div>
+
+    <div id="players-panel">
+        <p class="section-label">Sessions actives</p>
+        <div class="player-list" id="player-list">
+            <p class="notice">Aucun joueur connecté.</p>
+        </div>
+    </div>
+</aside>
+
+<main>
+    <div id="profile-panel" style="display:none">
+        <p class="section-label">Profil</p>
+        <div class="profile-block">
+            <div class="profile-name" id="profile-name"></div>
+            <div class="profile-meta" id="profile-meta"></div>
+            <div class="xp-bar-wrap"><div class="xp-bar" id="xp-bar"></div></div>
+            <div class="stats-grid">
+                <div class="stat-box"><div class="val" id="stat-level">—</div><div class="lbl">Niveau</div></div>
+                <div class="stat-box"><div class="val" id="stat-xp">—</div><div class="lbl">XP</div></div>
+                <div class="stat-box"><div class="val" id="stat-threshold">—</div><div class="lbl">Seuil</div></div>
+                <div class="stat-box"><div class="val" id="stat-monsters">—</div><div class="lbl">Monstres</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="invoke-panel" style="display:none">
+        <p class="section-label">Invocation</p>
+        <div class="invoke-section">
+            <button class="invoke-btn" id="invoke-btn" onclick="invoke()">
+                <span id="invoke-label">Invoquer</span>
+            </button>
+            <div id="invoke-error" class="error-msg" style="display:none"></div>
+            <div id="monster-result"></div>
+        </div>
+    </div>
+
+    <div id="empty-state" style="padding-top:80px;text-align:center">
+        <p class="notice">Connectez-vous pour commencer.</p>
+    </div>
+</main>
+
+<script src="index.js"></script>
+</body>
+</html>
