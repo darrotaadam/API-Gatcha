@@ -1,9 +1,15 @@
 const AUTH_URL      = "http://localhost:8080";
 const JOUEUR_URL    = "http://localhost:8081";
+const MONSTRE_URL = "http://localhost:8082";
 const INVOCATION_URL = "http://localhost:8083";
 
-const sessions = [];
+const sessions = JSON.parse(localStorage.getItem('sessions')) ?? [];
 let activeIndex = null;
+
+if( sessions.length ) {
+    activeIndex = 0;
+    loadProfile();
+}
 
 function activeSession() {
     return activeIndex !== null ? sessions[activeIndex] : null;
@@ -98,14 +104,24 @@ async function loadProfile() {
     const session = activeSession();
     if (!session) { renderMain(); return; }
 
+    console.log(sessions);
+
     try {
         const profile = await apiFetch(JOUEUR_URL, "/profile", "GET", null, authBearerHeaders(session.token));
         session.profile = profile;
     } catch (e) {
         session.profile = null;
     }
+    localStorage.setItem('sessions', JSON.stringify(sessions));
     renderSessionList();
     renderMain();
+}
+
+async function getMonstre(monstreId){
+    const session = activeSession();
+    if (!session) return;
+    console.log("/monstre-detail?id=" + encodeURIComponent(monstreId));
+    return await apiFetch(JOUEUR_URL, "/monstre-detail?id=" + encodeURIComponent(monstreId), "GET", null, authBearerHeaders(session.token));
 }
 
 async function invoke() {
@@ -119,11 +135,16 @@ async function invoke() {
     label.innerHTML = '<span class="pulse">Invocation...</span>';
 
     try {
-        const monster = await apiFetch(INVOCATION_URL, "/invoke", "POST", null, authBearerHeaders(session.token));
+        const monstreRes = await apiFetch(INVOCATION_URL, "/invoke", "POST", null, authBearerHeaders(session.token));
+        const monstreId = monstreRes.monstreId;
+        console.log(monstreRes);
+        console.log(monstreId)
+        const monster = await getMonstre(monstreId);
         await loadProfile();
         renderMonster(monster);
     } catch (e) {
         showError("invoke-error", e.message);
+        console.log(e)
     } finally {
         btn.disabled = false;
         label.textContent = "Invoquer";
@@ -196,21 +217,22 @@ function renderMonster(m) {
     if (!m) return;
     const container = document.getElementById("monster-result");
 
-    const typeClass = { feu: "type-feu", eau: "type-eau", vent: "type-vent" }[m.type?.toLowerCase()] ?? "";
-    const skills = (m.skills ?? m.competences ?? []).map(s => `
+    const typeClass = { fire: "type-feu", water: "type-eau", wind: "type-vent" }[m.element?.toLowerCase()] ?? "";
+    const skills = (m.skills ?? []).map(s => `
         <div class="skill-card">
-            <div class="skill-name">${s.name ?? "Compétence"}</div>
-            <div class="skill-row">Dégâts <span>${s.degatsBase ?? s.damage ?? "—"}</span></div>
-            <div class="skill-row">Ratio <span>${s.ratio ?? "—"}</span></div>
+            <div class="skill-name">${s.num ?? "-"}</div>
+            <div class="skill-row">Dégâts <span>${s.dmg ?? "—"}</span></div>
+            <div class="skill-row">Ratio (stat) <span>${s.ratio_stat ?? "—"}</span></div>
+            <div class="skill-row">Ratio (%) <span>${s.ratio_percent ?? "—"}</span></div>
             <div class="skill-row">Cooldown <span>${s.cooldown ?? "—"}</span></div>
-            <div class="skill-row">Niveau <span>${s.niveauAmelioration ?? s.level ?? 0} / ${s.niveauMax ?? s.maxLevel ?? "—"}</span></div>
+            <div class="skill-row">Niveau <span>${s.level ?? 0} / ${s.lvlMax ?? "—"}</span></div>
         </div>
     `).join("");
 
     container.innerHTML = `
         <div class="monster-result">
             <div class="monster-name">${m.name ?? m.nom ?? "Inconnu"}</div>
-            <div class="type-badge ${typeClass}">${m.type ?? "—"}</div>
+            <div class="type-badge ${typeClass}">${m.element ?? "—"}</div>
             <div class="monster-stats">
                 <div class="stat-box"><div class="val">${m.hp}</div><div class="lbl">HP</div></div>
                 <div class="stat-box"><div class="val">${m.atk}</div><div class="lbl">ATK</div></div>
