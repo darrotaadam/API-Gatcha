@@ -99,6 +99,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=passadmin
     volumes:
       - mongo-invocation:/persist/invocation
+      - ./mongo-init-invocations:/docker-entrypoint-initdb.d
     expose:
       - 27018
     ports:
