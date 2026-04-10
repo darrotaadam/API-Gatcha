@@ -8,6 +8,8 @@ Jeu type gatcha web utilisant 4 API Spring munie chacune d'une base de données 
 * `API_INVOCATION` : Sert à déclencher l'invocation, d'un monstre aléatoire pour un joueur.
 
 ## Lancer le projet :
+* `git clone --recurse-submodules https://github.com/darrotaadam/API-Gatcha.git`
+* `cd API-Gatcha`
 * `docker network create gatcha-lan`
 * `docker-compose up --build`
 * `npx serve  .` ou `python3 -m http.server` 
