@@ -1,12 +1,12 @@
 [submodule "API_AUTH"]
 	path = API_AUTH
-	url = git@github.com:darrotaadam/SPRING-WEB-API_AUTH.git
+	url = https://github.com/darrotaadam/SPRING-WEB-API_AUTH.git
 [submodule "API_JOUEUR"]
 	path = API_JOUEUR
-	url = git@github.com:darrotaadam/SPRING-WEB-API_JOUEUR.git
+	url = https://github.com/darrotaadam/SPRING-WEB-API_JOUEUR.git
 [submodule "API_MONSTRES"]
 	path = API_MONSTRES
-	url = git@github.com:darrotaadam/SPRING-WEB-API_MONSTRES.git
+	url = https://github.com/darrotaadam/SPRING-WEB-API_MONSTRES.git
 [submodule "API_INVOCATIONS"]
 	path = API_INVOCATIONS
-	url = git@github.com:darrotaadam/SPRING-WEB-API_INVOCATION.git
+	url = https://github.com/darrotaadam/SPRING-WEB-API_INVOCATION.git
