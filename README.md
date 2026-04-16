@@ -1,7 +1,7 @@
 # API-Gatcha
 
 ## Présentaiton:
-Jeu type gatcha web utilisant 4 API Spring munie chacune d'une base de données MongoDB.
+Jeu type gatcha web utilisant 4 API Spring munies chacune d'une base de données MongoDB.
 * `API_AUTH` : Gère l'authentification et la gestion des utilisateurs.
 * `API_JOUEUR` : Gère les données des joueurs, avec leurs statistiques et leurs monstres.
 * `API_MONSTRE` : Gère les données des monstres, avec leurs caractéristiques et leur stats.
